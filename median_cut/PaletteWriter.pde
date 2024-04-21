@@ -4,7 +4,6 @@ class PaletteWriter {
   private ArrayList<Color> p;
   private ColorQuantizer cq;
 
-  private int numColors;
   private int bitsPerChannel;
 
   String name;
@@ -17,16 +16,7 @@ class PaletteWriter {
     this.bitsPerChannel = bitsPerChannel;
     this.cq = new ColorQuantizer(this.bitsPerChannel);
   }
-  // Function to convert 32-bit ARGB to 16-bit RGB565
-  public int convertColor(int c) {
-    int r = (c >> 16) & 0xFF; // Red component
-    int g = (c >> 8) & 0xFF;  // Green component
-    int b = c & 0xFF;         // Blue component
 
-    // Convert to 5-6-5 format
-    int rgb565 = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
-    return rgb565;
-  }
   public void dump() {
     // Include statements and array definitions
     w.println("#include \"memory.h\"");
@@ -36,10 +26,8 @@ class PaletteWriter {
     w.println("const unsigned short "+name+"["+p.size()+"] = {");
 
     for (int i = 0; i < p.size(); i++) {
-      // Convert each color
 
       Color c = p.get(i);
-      //int rgb565 = convertColor(color(c.r, c.g, c.b));
 
       int quantizedColor = cq.quantizeColor(c.b, c.g, c.r); // blue and red are reversed because the GBA likes it that way.
 
