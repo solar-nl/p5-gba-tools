@@ -1,8 +1,9 @@
 import java.util.*;
 
 Palette p;
+PaletteWriter pw;
 
-String image_fn = "input_image.png";
+String image_fn = "input_image_2.png";
 PImage image;
 
 void setup() {
@@ -10,7 +11,7 @@ void setup() {
 
   image = loadImage(image_fn);
 
-  int numberOfColors = 128;
+  int numberOfColors = 256;
   int bitsPerChannel = 5;
   
   String palFn = "output/palette-png/"+image_fn+"_"+"debug_palette_"+str(numberOfColors)+"_"+str(bitsPerChannel)+".png";
@@ -21,6 +22,9 @@ void setup() {
 
   debugPaletteImage(palette, palFn );
   debugImage(imageFn, image,palette);
+  
+  pw = new PaletteWriter("pal.c","ai_griet",palette,bitsPerChannel);
+  pw.dump();
 
 
   noLoop();
