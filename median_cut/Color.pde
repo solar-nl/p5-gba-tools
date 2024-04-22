@@ -34,14 +34,17 @@ class Color {
 
     return new Color(r, g, b, a);
   }
-  
+
   public int squaredDistance(Color b) {
-    
+
     int dr = b.r - this.r;
-    int dg = b.g - this.g; 
+    int dg = b.g - this.g;
     int db = b.b - this.b;
-    
+
     return (dr*dr)+(dg*dg)+(db*db);
+  }
+  boolean equals(Color other) {
+    return this.r == other.r && this.g == other.g && this.b == other.b && this.a == other.a;
   }
 
   public String toString() {
