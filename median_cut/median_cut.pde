@@ -3,34 +3,41 @@ import java.util.*;
 Palette p;
 PaletteWriter pw;
 
-String image_fn = "input_image_3.png";
+String imageFn = "input_image_4.png";
 PImage image;
 
 void setup() {
   size(256, 256);
 
-  image = loadImage(image_fn);
+  image = loadImage(imageFn);
 
   int numberOfColors = 256;
   int bitsPerChannel = 5;
+  int tileSize = 8;
 
-  String palFn = "output/palette-png/"+image_fn+"_"+"debug_palette_"+str(numberOfColors)+"_"+str(bitsPerChannel)+".png";
-  String imageFn = "output/images/"+image_fn+"_"+"debug_image_"+str(numberOfColors)+"_"+str(bitsPerChannel)+".png";
+  String imageTitle = imageFn.substring(0, imageFn.lastIndexOf('.'));
+  String imageFn = generateFileName("images", imageTitle, "image", numberOfColors, bitsPerChannel, ".png");
+
+  String palFn = generateFileName("pallete-png", imageTitle, "palette", numberOfColors, bitsPerChannel, ".png");
+  String cPaletteFn = generateFileName("palette-c", imageTitle, "pal", numberOfColors, bitsPerChannel, ".c");
 
   p = new Palette(image, numberOfColors, bitsPerChannel);
   ArrayList<Color> palette = p.generatePalette();
 
-
-  TileSet ts = new TileSet(image,numberOfColors,8,bitsPerChannel);
+  TileSet ts = new TileSet(image, numberOfColors, tileSize, bitsPerChannel);
   ts.draw();
 
-   ts.pal.debugPaletteImage(ts.colors, palFn );
-   ts.pal.debugImage(imageFn, image,palette);
-   
-   String[] fn_parts = split(image_fn, ".");
-   pw = new PaletteWriter("output/pallette-c/pal_"+fn_parts[0]+".c",fn_parts[0],palette,bitsPerChannel);
-   pw.dump();
+  ts.pal.debugPaletteImage(ts.colors, palFn );
+  ts.pal.debugImage(imageFn, image, palette);
 
+  pw = new PaletteWriter(cPaletteFn, imageTitle, palette, bitsPerChannel);
+  pw.dump();
 
+  Sprite s = new Sprite(0,0,SpriteSize.SIZE_64x64);
+  
   noLoop();
+}
+
+String generateFileName(String directory, String baseName, String descriptor, int numColors, int bits, String fileExtension) {
+  return "output/" + directory + "/" + baseName + "_" + descriptor + "_" + numColors + "_" + bits + fileExtension;
 }
