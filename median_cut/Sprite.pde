@@ -25,7 +25,7 @@ class Sprite {
 
 
   SpriteSize s;
-  
+
 
   int width;
   int height;
@@ -34,6 +34,8 @@ class Sprite {
     this.x = x;
     this.y = y;
     this.s = size;
+    this.width = size.getWidth();
+    this.height = size.getHeight();
 
     println("w: "+size.getWidth()+" h:"+size.getHeight());
   }
@@ -46,10 +48,10 @@ class Sprite {
 
 enum SpriteSize {
 
-    SIZE_8x8(8, 8), SIZE_8x16(8, 16), SIZE_8x32(8, 32), SIZE_8x64(8, 64),
-    SIZE_16x8(16, 8), SIZE_16x16(16, 16), SIZE_16x32(16, 32), SIZE_16x64(16, 64),
-    SIZE_32x8(32, 8), SIZE_32x16(32, 16), SIZE_32x32(32, 32), SIZE_32x64(32, 64),
-    SIZE_64x8(64, 8), SIZE_64x16(64, 16), SIZE_64x32(64, 32), SIZE_64x64(64, 64);
+  SIZE_8x8(8, 8), SIZE_8x16(8, 16), SIZE_8x32(8, 32), SIZE_8x64(8, 64),
+  SIZE_16x8(16, 8), SIZE_16x16(16, 16), SIZE_16x32(16, 32), SIZE_16x64(16, 64),
+  SIZE_32x8(32, 8), SIZE_32x16(32, 16), SIZE_32x32(32, 32), SIZE_32x64(32, 64),
+  SIZE_64x8(64, 8), SIZE_64x16(64, 16), SIZE_64x32(64, 32), SIZE_64x64(64, 64);
 
   private final int width;
   private final int height;
@@ -66,7 +68,7 @@ enum SpriteSize {
   public int getHeight() {
     return height;
   }
-  int convertSize(int n) {
-  return (int) (Math.log(n) / Math.log(2)) - 3;
-}
+  public static int convertSize(int n) {
+    return (int) (Math.log(n) / Math.log(2)) - 3;
+  }
 }

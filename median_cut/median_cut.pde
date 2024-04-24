@@ -33,7 +33,8 @@ void setup() {
   pw = new PaletteWriter(cPaletteFn, imageTitle, palette, bitsPerChannel);
   pw.dump();
 
-  Sprite s = new Sprite(0,0,SpriteSize.SIZE_64x64);
+  Sprite s = new Sprite(0,0,SpriteSize.SIZE_8x64);
+  println(SpriteSize.convertSize(s.width));
   
   noLoop();
 }
