@@ -7,6 +7,7 @@ String imageFn = "input_image_4.png";
 PImage image;
 
 void setup() {
+  size(384, 192);
 
   image = loadImage(imageFn);
 
