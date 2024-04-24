@@ -7,7 +7,6 @@ String imageFn = "input_image_4.png";
 PImage image;
 
 void setup() {
-  size(256, 256);
 
   image = loadImage(imageFn);
 
@@ -33,10 +32,13 @@ void setup() {
   pw = new PaletteWriter(cPaletteFn, imageTitle, palette, bitsPerChannel);
   pw.dump();
 
-  Sprite s = new Sprite(0,0,SpriteSize.SIZE_8x64);
-  println(SpriteSize.convertSize(s.width));
-  
+  Sprite s = new Sprite(192,32,SpriteSize.SIZE_32x32,0);
+  s.tiles = ts.getSpriteTiles(s.s,s.tileIndex);
+
+  s.draw();
+
   noLoop();
+
 }
 
 String generateFileName(String directory, String baseName, String descriptor, int numColors, int bits, String fileExtension) {

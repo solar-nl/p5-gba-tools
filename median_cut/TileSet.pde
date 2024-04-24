@@ -14,6 +14,9 @@ class TileSet {
   int width;
   int height;
 
+  int columns;
+  int rows;
+
   public TileSet(PImage img, int tileColors, int tileSize, int bpc) {
     this.sourceImage = img;
     this.tileColors = tileColors;
@@ -22,6 +25,9 @@ class TileSet {
 
     this.width = img.width;
     this.height = img.height;
+
+    this.columns = this.width / tileSize;
+    this.rows = this.height / tileSize;
 
     // create a new palette based on the input image and the number of colors.
     pal = new Palette(this.sourceImage, this.tileColors, this.bitsPerColor);
@@ -74,6 +80,36 @@ class TileSet {
       }
     }
   }
+
+  public ArrayList<Tile> getSpriteTiles(SpriteSize s, int tileIndex) {
+    ArrayList<Tile> spriteTiles = new ArrayList<Tile>();
+
+    int startRow = tileIndex / this.columns; 
+    int startCol = tileIndex % this.columns; 
+
+    int tileWidth = s.width/tileSize;
+    int tileHeight = s.height/tileSize;
+
+    
+
+    for (int row = 0; row < tileHeight; row++) {
+      for (int col = 0; col < tileWidth; col++) {
+        int currentRow = startRow + row;
+        int currentCol = startCol + col;
+
+        if (currentCol < columns) { // Check if within the bounds of the tileset width
+          int index = currentRow * columns + currentCol;
+          Tile tile = tiles.get(index);
+          spriteTiles.add(tile);
+        }
+      }
+    }
+    
+    println(spriteTiles.size());
+    
+    return spriteTiles;
+  }
+
   public void draw() {
 
     int index = 0;

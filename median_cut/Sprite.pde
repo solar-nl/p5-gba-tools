@@ -23,21 +23,48 @@ class Sprite {
   int priority;
   int tileIndex;
 
-
   SpriteSize s;
 
+  ArrayList<Tile> tiles;
 
   int width;
   int height;
 
-  public Sprite(int x, int y, SpriteSize size) {
+  int rows;
+  int columns;
+
+  int tileSize = 8;
+
+  public Sprite(int x, int y, SpriteSize size, int tileIndex) {
     this.x = x;
     this.y = y;
     this.s = size;
     this.width = size.getWidth();
     this.height = size.getHeight();
 
-    println("w: "+size.getWidth()+" h:"+size.getHeight());
+    this.tileIndex = tileIndex;
+
+    this.width = this.s.getWidth();
+    this.height = this.s.getHeight();
+
+    this.columns = this.width/tileSize;
+    this.rows = this.height/tileSize;
+
+    println("c: "+this.columns+" r:"+this.rows);
+  }
+
+  public void draw() {
+        // Calculate the x and y position on the screen to draw the tile
+    for(int i = 0; i<tiles.size(); i++) {
+      Tile t = tiles.get(i);
+
+      int dx = x + (i % this.columns) * tileSize;
+      int dy = y + (i / this.rows) * tileSize;
+
+      image(t.rgba,dx,dy);
+
+    }
+
   }
 
   public int getAttribute(int attribute) {
