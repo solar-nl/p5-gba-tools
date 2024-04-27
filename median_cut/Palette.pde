@@ -135,6 +135,26 @@ class Palette {
     image.save(filename);
   }
 
+  public void draw(int xOrigin, int yOrigin, int tileSize, int spacing) {
+    int index = 0;
+    for (int y = 0; y < 16; y++) {
+      for (int x = 0; x < 16; x++) {
+        Color c;
+
+        if (index < palette.size()) {
+          c = palette.get(index);
+        } else {
+          c = new Color(0, 0, 0, 255);
+        }
+        
+        int xPos = xOrigin+x*tileSize + x*spacing;
+        int yPos = yOrigin+y*tileSize + y*spacing;
+        image(c.tile,xPos,yPos);
+        index++;
+      }
+    }
+  }
+
   void debugPaletteImage(ArrayList<Color> palette, String filename) {
     PImage debug = createImage(256, 256, RGB);
     debug.loadPixels();
