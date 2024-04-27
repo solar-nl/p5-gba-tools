@@ -4,6 +4,8 @@ class Color {
   public int g;
   public int b;
   public int a;
+  
+  public PImage tile;
 
   public  Color(int c) {
     this.a = (c >> 24) & 0xFF;
@@ -17,6 +19,9 @@ class Color {
     this.r = r;
     this.g = g;
     this.b = b;
+    
+    this.tile = colorTile(8);
+    
   }
   public Color(int r, int g, int b) {
     this(r, g, b, 255);
@@ -45,6 +50,23 @@ class Color {
   }
   boolean equals(Color other) {
     return this.r == other.r && this.g == other.g && this.b == other.b && this.a == other.a;
+  }
+
+  public PImage colorTile(int tileSize) {
+    PImage tile = createImage(tileSize, tileSize, RGB);
+
+    color c = color(this.r,this.g,this.b);
+    
+    tile.loadPixels();
+    
+    for (int i = 0; i<tileSize; i++) {
+      for (int j=0; j<tileSize; j++) {
+        tile.pixels[j*tileSize+i] = c;
+      }
+    }
+    
+    tile.updatePixels();
+    return tile;
   }
 
   public String toString() {
