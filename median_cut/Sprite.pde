@@ -58,8 +58,8 @@ class Sprite {
     for(int i = 0; i<tiles.size(); i++) {
       Tile t = tiles.get(i);
 
-      int dx = x + (i % this.columns) * tileSize;
-      int dy = y + (i / this.rows) * tileSize;
+      int dx = this.x + (i % this.columns) * this.tileSize;
+      int dy = this.y + (i / this.rows) * this.tileSize;
 
       image(t.rgba,dx,dy);
 
@@ -97,5 +97,9 @@ enum SpriteSize {
   }
   public static int convertSize(int n) {
     return (int) (Math.log(n) / Math.log(2)) - 3;
+  }
+  
+  public String toString() {
+    return "[w: "+this.width+" h: "+this.height+"]";
   }
 }
