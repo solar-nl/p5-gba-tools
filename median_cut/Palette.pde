@@ -1,6 +1,6 @@
 class Palette {
   private ArrayList<RGBCube> rgbCubes;
-  private ArrayList<Color> palette;
+  private ArrayList<Color> colors;
 
   int[] paletteMap;
 
@@ -12,7 +12,7 @@ class Palette {
   public Palette(PImage img, int numColors, int bitsPerChannel) {
 
     this.rgbCubes = new ArrayList<RGBCube>();
-    this.palette = new ArrayList<Color>();
+    this.colors = new ArrayList<Color>();
     this.numColors = numColors;
     this.bitsPerChannel = bitsPerChannel;
     this.cq = new ColorQuantizer(this.bitsPerChannel);
@@ -30,6 +30,8 @@ class Palette {
       rgbCube.colors.add(new Color(p));
     }
     rgbCubes.add(rgbCube);
+
+    this.colors = generatePalette();
   }
 
   public Palette(PImage img) {
@@ -39,8 +41,8 @@ class Palette {
   public Palette(PImage img, int numColors) {
     this(img, numColors, 8);
   }
-
-  public ArrayList<Color> generatePalette() {
+  // generate a palette using the median cut algorithm
+  private ArrayList<Color> generatePalette() {
     List<RGBCube> tempCubes = new ArrayList<>();
     while (rgbCubes.size() < this.numColors) {
       for (RGBCube rgbCube : rgbCubes) {
@@ -62,21 +64,21 @@ class Palette {
       int quantizedColor = cq.quantizeColor(averageColor.r, averageColor.g, averageColor.b);
       Color deQuantizedColor = cq.deQuantizeColor(quantizedColor);
 
-      palette.add(deQuantizedColor);
+      colors.add(deQuantizedColor);
     }
-    return palette;
+    return colors;
   }
 
   // Find the index of a color in the palette
   public int index(Color c) {
-    for (int i = 0; i < palette.size(); i++) {
-      if (palette.get(i).equals(c)) {
+    for (int i = 0; i < colors.size(); i++) {
+      if (colors.get(i).equals(c)) {
         return i;
       }
     }
     return -1; // Return -1 if color is not found
   }
-
+  // create a paletized representation of the quantized Image
   public int[][] paletteIndices(PImage quantizedImage) {
     int[][] paletteIndices = new int[quantizedImage.width][quantizedImage.height];
 
@@ -94,24 +96,24 @@ class Palette {
 
 
 
-  PImage quantizeImage(PImage img, ArrayList<Color> palette) {
+  PImage quantizeImage(PImage img, ArrayList<Color> colors) {
     img.loadPixels();
     for (int i = 0; i<img.pixels.length; i++) {
 
       int pixelColor = img.pixels[i];
       Color pColor = new Color(pixelColor);
-      Color closestColor = findClosestColor(pColor, palette);
+      Color closestColor = findClosestColor(pColor, colors);
       img.pixels[i] = color(closestColor.r, closestColor.g, closestColor.b);
     }
     img.updatePixels();
     return img;
   }
 
-  Color findClosestColor(Color c, ArrayList<Color> palette) {
+  Color findClosestColor(Color c, ArrayList<Color> colors) {
     int minDistance = Integer.MAX_VALUE;
     Color closestColor = new Color (0, 0, 0);
 
-    for (Color palColor : palette) {
+    for (Color palColor : colors) {
       int dist = c.squaredDistance(palColor);
       if (dist < minDistance) {
         minDistance = dist;
@@ -122,13 +124,13 @@ class Palette {
     return closestColor;
   }
 
-  void debugImage(String filename, PImage image, ArrayList<Color>palette) {
+  void debugImage(String filename, PImage image, ArrayList<Color>colors) {
     image.loadPixels();
     for (int i = 0; i<image.pixels.length; i++) {
 
       int pixelColor = image.pixels[i];
       Color pColor = new Color(pixelColor);
-      Color closestColor = findClosestColor(pColor, palette);
+      Color closestColor = this.findClosestColor(pColor, colors);
       image.pixels[i] = color(closestColor.r, closestColor.g, closestColor.b);
     }
     image.updatePixels();
@@ -136,26 +138,9 @@ class Palette {
   }
 
   public void draw(int xOrigin, int yOrigin, int tileSize, int spacing) {
-    int index = 0;
-    for (int y = 0; y < 16; y++) {
-      for (int x = 0; x < 16; x++) {
-        Color c;
-
-        if (index < palette.size()) {
-          c = palette.get(index);
-        } else {
-          c = new Color(0, 0, 0, 255);
-        }
-        
-        int xPos = xOrigin+x*tileSize + x*spacing;
-        int yPos = yOrigin+y*tileSize + y*spacing;
-        image(c.tile,xPos,yPos);
-        index++;
-      }
-    }
   }
 
-  void debugPaletteImage(ArrayList<Color> palette, String filename) {
+  void debugPaletteImage(ArrayList<Color> colors, String filename) {
     PImage debug = createImage(256, 256, RGB);
     debug.loadPixels();
     int index = 0;
@@ -163,8 +148,8 @@ class Palette {
       for (int x = 0; x < 16; x++) {
         Color c;
 
-        if (index < palette.size()) {
-          c = palette.get(index);
+        if (index < colors.size()) {
+          c = colors.get(index);
         } else {
           c = new Color(0, 0, 0, 255);
         }
@@ -183,5 +168,110 @@ class Palette {
 
     debug.updatePixels();
     debug.save(filename);
+  }
+}
+
+class PaletteView {
+
+  PGraphics g;
+
+  int width;
+  int height;
+
+  int rows;
+  int cols;
+
+  int tileSize;
+  int spacing;
+
+  Palette pal;
+
+  public PaletteView(Palette pal, int tileSize, int spacing) {
+
+    // determine the width and height based on the number of colors in the palette, the tilesize and the spacing.
+    int numColors = pal.numColors;
+    rows = (int) sqrt(numColors);
+    cols = (int) sqrt(numColors);
+
+    this.tileSize = tileSize;
+    this.spacing = spacing;
+
+    this.width = (cols*tileSize)+(spacing*(cols-1));
+    this.height = (rows*tileSize)+(spacing*(rows-1));
+
+    this.pal = pal;
+
+    g = createGraphics(this.width, this.height);
+  }
+
+  public void draw(int xOrigin, int yOrigin) {
+    g.beginDraw();
+
+    int index = 0;
+    for (int y = 0; y < this.rows; y++) {
+      for (int x = 0; x < this.cols; x++) {
+        Color c;
+
+        if (index < pal.colors.size()) {
+          c = pal.colors.get(index);
+        } else {
+          c = new Color(0, 0, 0, 255);
+        }
+
+        int xPos = x*this.tileSize + x*this.spacing;
+        int yPos = y*this.tileSize + y*this.spacing;
+        g.image(c.tile, xPos, yPos);
+        index++;
+      }
+    }
+    g.endDraw();
+
+    image(g, xOrigin, yOrigin);
+  }
+}
+
+class PaletteWriter {
+
+  private PrintWriter w;
+  private ArrayList<Color> colors;
+  private ColorQuantizer cq;
+
+  private int bitsPerChannel;
+
+  String name;
+
+  public PaletteWriter(String fn, String paletteName, ArrayList<Color> colors, int bitsPerChannel) {
+    this.w = createWriter(fn);
+    this.colors = colors;
+    this.name = paletteName;
+    this.bitsPerChannel = bitsPerChannel;
+    this.cq = new ColorQuantizer(this.bitsPerChannel);
+  }
+
+  public void dump() {
+    // Include statements and array definitions
+    w.println("#include \"memory.h\"");
+    w.println("unsigned short EWRAM_DATA generated_palette[256];");
+
+    // Start of array
+    w.println("const unsigned short "+name+"["+colors.size()+"] = {");
+
+    for (int i = 0; i < colors.size(); i++) {
+
+      Color c = colors.get(i);
+
+      int quantizedColor = cq.quantizeColor(c.b, c.g, c.r); // blue and red are reversed because the GBA likes it that way.
+
+      w.print(String.format("0x%04X", quantizedColor)); // Format as hexadecimal
+
+      // Handle commas and line breaks
+      if (i < colors.size() - 1) w.print(", ");
+      if ((i + 1) % 16 == 0) w.println();
+    }
+
+    // End of array
+    w.println("};");
+    w.flush(); // Make sure to flush the writer to ensure all data is written
+    w.close(); // Close the writer to free resources
   }
 }
