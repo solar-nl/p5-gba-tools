@@ -92,6 +92,12 @@ class RGBCube {
     );
     return sortedColors;
   }
+  
+  /**
+  *
+  * Split a list of Color objects into two lists based on the median of the input Color list.
+  *
+  */
 
   public ArrayList splitColorList(ArrayList<Color> colors) {
     ArrayList<ArrayList> splitColors = new ArrayList<ArrayList>();
@@ -114,6 +120,12 @@ class RGBCube {
 
     return splitColors;
   }
+
+  /**
+  *
+  * Calculate the average RGB color for the colors present in this RGBCube
+  *
+  */
 
   public Color averageColor() {
 
