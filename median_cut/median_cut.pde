@@ -1,4 +1,22 @@
+import controlP5.*;
+
 import java.util.*;
+
+ControlP5 cp5;
+
+ArrayList<Textlabel> labels;
+ArrayList<Rect> viewBounds;
+
+String inputImageLabel = "Input Image";
+String inputMaskLabel = "Input Mask";
+String finalImageLabel = "Final Image";
+String finalMaskLabel = "Final Mask";
+
+PVector finalImageOrigin;
+PVector finalMaskOrigin;
+PVector inputImageOrigin;
+PVector inputMaskOrigin;
+
 
 Palette pal;
 PaletteWriter pw;
@@ -6,19 +24,24 @@ PaletteWriter pw;
 TileSet ts;
 
 GBAScreen gbaScreen;
-PaletteView palView;
+PaletteView paletteView;
+TileSetView tileSetView;
 
 PVector mousePos;
 
 
-String imageFn = "c4d_seq_test/c4d_seq_test0000.png";
+String imageFn = "input_image_2.png";
 PImage image;
 
 void setup() {
   size(384, 384);
+  finalImageOrigin = new PVector(160, 160);
+  inputImageOrigin = new PVector(160, 16);
+  inputMaskOrigin = new PVector(16, 16);
+  finalMaskOrigin = new PVector(16, 160);
 
 
-  
+
   image = loadImage(imageFn);
 
   int numberOfColors = 256;
@@ -44,14 +67,14 @@ void setup() {
   s.tiles = ts.getSpriteTiles(s.s, s.tileIndex);
   s.draw();
 
-
-  gbaScreen = new GBAScreen();
-  gbaScreen.setup();
-
-  palView = new PaletteView(pal,tileSize,1);
-
+  gbaScreen = new GBAScreen(16, 192);
+  paletteView = new PaletteView(176,16,pal, tileSize, 1);
+//  tileSetView = new TileSetView(ts);
+  setupViews();
 
 
+  // interface setup
+  setupControlP5();
 
   /*for(SpriteSize size : SpriteSize.values()) {
    println(size.toString());
@@ -60,13 +83,22 @@ void setup() {
   //noLoop();
 }
 
+void setupViews() {
+  gbaScreen.setup();
+  paletteView.setup();
+  
+  gbaScreen.title = "GBA Screen";
+  paletteView.title = "TileSet Pallete";
+  
+}
+
 void draw() {
   gbaScreen.update();
   background(64);
   ts.draw(16, 16);
 
-  palView.draw(176,16);
-  gbaScreen.draw(16,192);
+  paletteView.draw();
+  gbaScreen.draw();
 }
 
 String generateFileName(String directory, String baseName, String descriptor, int numColors, int bits, String fileExtension) {
@@ -92,4 +124,17 @@ PVector localToGlobal(PVector local, PVector origin) {
 
 PVector globalToLocal(PVector global, PVector origin) {
   return new PVector(global.x - origin.x, global.y - origin.y);
+}
+
+void setupControlP5() {
+  cp5 = new ControlP5(this);
+
+
+
+  Textlabel gbaViewLabel = cp5.addTextlabel(gbaScreen.title).setText(gbaScreen.title).setPosition(gbaScreen.x, gbaScreen.y-12);
+  Textlabel paletteViewLabel = cp5.addTextlabel(paletteView.title).setText(paletteView.title).setPosition(paletteView.x,paletteView.y-12);
+  //Textlabel tileSetViewLabel = cp5.addTextlabel(tsView.title).setText(tsView.title).setPosition(tsView.x,tsView.y);
+  //myTextlabelB = cp5.addTextlabel(finalMaskLabel).setText(finalMaskLabel).setPosition(finalMaskOrigin.x, finalMaskOrigin.y-12);
+  //myTextlabelC = cp5.addTextlabel(inputImageLabel).setText(inputImageLabel).setPosition(inputImageOrigin.x, inputImageOrigin.y-12);
+  //myTextlabelD = cp5.addTextlabel(inputMaskLabel).setText(inputMaskLabel).setPosition(inputMaskOrigin.x, inputMaskOrigin.y-12);
 }

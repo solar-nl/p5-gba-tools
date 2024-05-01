@@ -2,16 +2,25 @@ class GBAScreen {
 
   PGraphics g;
 
-  PVector pos;
+  int x;
+  int y;
 
   PVector pointA, pointB;
+  Rect bounds;
 
   float angle = 0;
   float diameter = 64;
   float radius = diameter / 2;
   
-  GBAScreen() {
+  String title;
+  
+  GBAScreen(int x, int y) {
     this.g = createGraphics(240,160);
+
+    this.x = x;
+    this.y = y;
+
+    bounds = new Rect(x,y,g.width,g.height);
   }
 
   public void setup() {
@@ -29,7 +38,7 @@ class GBAScreen {
     angle+= 0.05;
   }
 
-  public void draw(int x, int y) {
+  public void draw() {
     g.beginDraw();
     g.background(0);
     g.stroke(255);
@@ -39,6 +48,6 @@ class GBAScreen {
     g.line(0, 0, 240, 160);
     g.endDraw();
 
-    image(g, x, y);
+    image(g, this.x, this.y);
   }
 }

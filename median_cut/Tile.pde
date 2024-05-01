@@ -68,13 +68,15 @@ class TileSet {
     // quantize the input image according to the palette
     quantizedImage = pal.quantizeImage(img, colors);
 
-    // create a new tilemap
-    tm = new TileMap();
+    this.tm = new TileMap();
 
-    tiles = new ArrayList<Tile>();
+    // chop the quantized image into tiles
+    tiles = chopTiles(quantizedImage,this.tm, this.tileSize);
 
+  }
 
-
+  private ArrayList<Tile> chopTiles(PImage quantizedImage, TileMap tm, int tileSize) {
+    ArrayList<Tile> t = new ArrayList<Tile>();
     int index = 0;
     for (int y = 0; y < sourceImage.height; y += tileSize) {
       for (int x = 0; x < sourceImage.width; x += tileSize) {
@@ -90,16 +92,11 @@ class TileSet {
         tile.rgba = quantizedImage.get(x, y, tileSize, tileSize);
         tile.paletteIndices = pal.paletteIndices(tile.rgba);
 
-        tiles.add(tile);
+        t.add(tile);
 
         index++;
       }
-    }
-  }
-
-  private ArrayList<Tile> chopTiles(PImage quantizedImage, TileMap tm, int tileSize) {
-    ArrayList<Tile> t = new ArrayList<Tile>();
-    
+    }    
     
     
     return t;
@@ -150,4 +147,16 @@ class TileSet {
       i++;
     }
   }
+}
+
+class TileSetView {
+
+  PVector pos;
+
+  String title;
+
+  public TileSetView(int x, int y) {
+    pos = new PVector(x,y);
+  }
+
 }

@@ -183,11 +183,19 @@ class PaletteView {
 
   int tileSize;
   int spacing;
+  
+  int x;
+  int y;
 
   Palette pal;
+  
+  String title;
 
-  public PaletteView(Palette pal, int tileSize, int spacing) {
+  public PaletteView(int x, int y, Palette pal, int tileSize, int spacing) {
 
+    this.x = x;
+    this.y = y;
+    
     // determine the width and height based on the number of colors in the palette, the tilesize and the spacing.
     int numColors = pal.numColors;
     rows = (int) sqrt(numColors);
@@ -203,13 +211,17 @@ class PaletteView {
 
     g = createGraphics(this.width, this.height);
   }
+  
+  public void setup() {
+    println("paletteViewSetup");
+  }
 
-  public void draw(int xOrigin, int yOrigin) {
+  public void draw() {
     g.beginDraw();
 
     int index = 0;
-    for (int y = 0; y < this.rows; y++) {
-      for (int x = 0; x < this.cols; x++) {
+    for (int row = 0; row < this.rows; row++) {
+      for (int col = 0; col < this.cols; col++) {
         Color c;
 
         if (index < pal.colors.size()) {
@@ -218,15 +230,15 @@ class PaletteView {
           c = new Color(0, 0, 0, 255);
         }
 
-        int xPos = x*this.tileSize + x*this.spacing;
-        int yPos = y*this.tileSize + y*this.spacing;
+        int xPos = col*this.tileSize + col*this.spacing;
+        int yPos = row*this.tileSize + row*this.spacing;
         g.image(c.tile, xPos, yPos);
         index++;
       }
     }
     g.endDraw();
 
-    image(g, xOrigin, yOrigin);
+    image(g, this.x, this.y);
   }
 }
 
