@@ -137,8 +137,6 @@ class Palette {
     image.save(filename);
   }
 
-  public void draw(int xOrigin, int yOrigin, int tileSize, int spacing) {
-  }
 
   void debugPaletteImage(ArrayList<Color> colors, String filename) {
     PImage debug = createImage(256, 256, RGB);
